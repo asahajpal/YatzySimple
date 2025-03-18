@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 
 public delegate void NextTurnDelegate(GameContext context);
 
@@ -173,7 +174,7 @@ public class Strategy
 {
     public string ChooseCategory(Dictionary<string, int> scores, int[] dice)
     {
-        string bestCategory = null;
+        string bestCategory = @"None";
         int maxScore = 0;
 
         foreach (var category in scores.Keys)
