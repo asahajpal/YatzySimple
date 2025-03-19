@@ -3,12 +3,11 @@ using YatzySimple.Interfaces;
 
 namespace YatzySimple.States
 {
-
     public class RollingDiceState : IGameState
     {
         public NextTurnDelegate NextTurn => (context) =>
         {
-            context.Player.RollDice();
+            context.RollDice();
             context.SetState(new ScoringState());
         };
 

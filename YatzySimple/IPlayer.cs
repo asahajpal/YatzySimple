@@ -4,8 +4,7 @@ namespace YatzySimple.Interfaces
 {
     public interface IPlayer
     {
-        int[] Dice { get; }
-        void RollDice();
+        void RollDice(GameContext context);
         void ScoreDice(GameContext context);
     }
 }

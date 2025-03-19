@@ -5,38 +5,26 @@ namespace YatzySimple.Players
 {
     public class SimulatedPlayer : IPlayer
     {
-        private Random _random;
-        private int[] _dice;
         private Strategy _strategy;
 
         public SimulatedPlayer()
         {
-            _random = new Random();
-            _dice = new int[5];
             _strategy = new Strategy();
         }
 
-        public int[] Dice => _dice;
-
-        public void RollDice()
+        public void RollDice(GameContext context)
         {
-            for (int i = 0; i < 3; i++) // Roll dice up to 3 times
-            {
-                for (int j = 0; j < _dice.Length; j++)
-                {
-                    _dice[j] = _random.Next(1, 7);
-                }
-            }
+            context.RollDice();
         }
 
         public void ScoreDice(GameContext context)
         {
-            string category = _strategy.ChooseCategory(context.GetScores(), _dice);
-            int newScore = CalculateScore(category);
+            string category = _strategy.ChooseCategory(context.GetScores(), context.DiceValues);
+            int newScore = CalculateScore(category, context.DiceValues);
             context.UpdateScore(category, newScore);
         }
 
-        private int CalculateScore(string category)
+        private int CalculateScore(string category, int[] dice)
         {
             int number = category switch
             {
@@ -50,7 +38,7 @@ namespace YatzySimple.Players
             };
 
             int score = 0;
-            foreach (int die in _dice)
+            foreach (int die in dice)
             {
                 if (die == number)
                 {

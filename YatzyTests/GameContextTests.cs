@@ -47,8 +47,8 @@ namespace YatzyTests
         {
             // Arrange
             var mockPlayer = new Mock<IPlayer>();
-            mockPlayer.Setup(p => p.Dice).Returns(new int[] { 1, 1, 1, 1, 1 });
-            mockPlayer.Setup(p => p.RollDice());
+            //mockPlayer.Setup(p => p.Dice).Returns(new int[] { 1, 1, 1, 1, 1 });
+            //mockPlayer.Setup(p => p.RollDice());
             mockPlayer.Setup(p => p.ScoreDice(It.IsAny<GameContext>())).Callback<GameContext>(context =>
             {
                 context.UpdateScore("Ones", 5);
