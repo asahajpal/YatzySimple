@@ -14,7 +14,6 @@ public class RollingDiceState : IGameState
 {
     public NextTurnDelegate NextTurn => (context) =>
     {
-        Console.WriteLine("Rolling dice...");
         context.Player.RollDice();
         context.SetState(new ScoringState());
     };
@@ -26,7 +25,6 @@ public class ScoringState : IGameState
 {
     public NextTurnDelegate NextTurn => (context) =>
     {
-        Console.WriteLine("Scoring...");
         context.Player.ScoreDice(context);
         if (context.AllCategoriesScored())
         {
@@ -45,7 +43,7 @@ public class GameOverState : IGameState
 {
     public NextTurnDelegate NextTurn => (context) =>
     {
-        Console.WriteLine("Game over");
+        // No action needed for game over
     };
 
     public bool IsGameOn => false;
@@ -79,9 +77,45 @@ public class GameContext
         _state = state;
     }
 
-    public void PlayNextTurn()
+    public void PlayNextTurn(out string message)
     {
+        IGameState currentState = _state;
+        var sb = new System.Text.StringBuilder();
+
+        if (currentState is RollingDiceState)
+        {
+            sb.AppendLine("Rolling dice...");
+        }
+        else if (currentState is ScoringState)
+        {
+            sb.AppendLine("Scoring...");
+        }
+
         _state.NextTurn(this);
+
+        if (currentState is RollingDiceState)
+        {
+            int[] diceValues = Player.Dice;
+            sb.AppendLine("Dice values: " + string.Join(", ", diceValues));
+        }
+        else if (currentState is ScoringState)
+        {
+            Dictionary<string, int> scores = GetScores();
+            sb.AppendLine("Current Scores:");
+            foreach (var score in scores)
+            {
+                sb.AppendLine($"{score.Key}: {score.Value}");
+            }
+            int totalScore = CalculateTotalScore();
+            sb.AppendLine($"Total Score: {totalScore}");
+        }
+
+        if (currentState is GameOverState)
+        {
+            sb.AppendLine("Game over");
+        }
+
+        message = sb.ToString();
     }
 
     public bool AllCategoriesScored()
@@ -98,13 +132,25 @@ public class GameContext
 
     public void UpdateScore(string category, int score)
     {
-        _scores[category] = score;
-        Console.WriteLine($"{category} scored: {score}");
+        if (!string.IsNullOrEmpty(category))
+        {
+            _scores[category] = score;
+        }
     }
 
     public Dictionary<string, int> GetScores()
     {
         return _scores;
+    }
+
+    public int CalculateTotalScore()
+    {
+        int totalScore = 0;
+        foreach (var score in _scores.Values)
+        {
+            totalScore += score;
+        }
+        return totalScore;
     }
 }
 
@@ -121,7 +167,9 @@ public class SimulatedPlayer
         _strategy = new Strategy();
     }
 
-    public void RollDice()
+    public int[] Dice => _dice;
+
+    public int[] RollDice()
     {
         for (int i = 0; i < 3; i++) // Roll dice up to 3 times
         {
@@ -129,17 +177,12 @@ public class SimulatedPlayer
             {
                 _dice[j] = _random.Next(1, 7);
             }
-            Console.WriteLine($"Roll {i + 1}: " + string.Join(", ", _dice));
         }
+        return _dice;
     }
 
     public void ScoreDice(GameContext context)
     {
-         Console.WriteLine("Current Scores:");
-        foreach (var score in context.GetScores())
-        {
-            Console.WriteLine($"{score.Key}: {score.Value}");
-        }
         string category = _strategy.ChooseCategory(context.GetScores(), _dice);
         int newScore = CalculateScore(category);
         context.UpdateScore(category, newScore);
@@ -174,7 +217,7 @@ public class Strategy
 {
     public string ChooseCategory(Dictionary<string, int> scores, int[] dice)
     {
-        string bestCategory = @"None";
+        string bestCategory = string.Empty;
         int maxScore = 0;
 
         foreach (var category in scores.Keys)
@@ -226,10 +269,22 @@ public class Program
 
         while (game.CurrentState.IsGameOn)
         {
-            game.PlayNextTurn();
-        }
+            Console.WriteLine("Press any key to play the next turn, or type 's' to stop the game.");
+            var input = Console.ReadKey(intercept: true).KeyChar;
+            if (input == 's')
+            {
+                Console.WriteLine("Game stopped by user.");
+                break;
+            }
 
-        // play the last turn and conclude the game
-        game.PlayNextTurn();
+            game.PlayNextTurn(out string message);
+            Console.WriteLine(message);
+
+            if (!game.CurrentState.IsGameOn)
+            {
+                Console.WriteLine("Game over");
+                break;
+            }
+        }
     }
 }
