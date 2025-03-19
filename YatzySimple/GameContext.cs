@@ -1,14 +1,20 @@
-public class GameContext
-{
-    private IGameState _state;
-    public IPlayer Player { get; set; }
-    private Dictionary<string, int> _scores;
+using YatzySimple.Interfaces;
+using YatzySimple.Players;
+using YatzySimple.States;
 
-    public GameContext()
+namespace YatzySimple.Core
+{
+    public class GameContext
     {
-        _state = new RollingDiceState();
-        Player = new SimulatedPlayer();
-        _scores = new Dictionary<string, int>
+        private IGameState _state;
+        public IPlayer Player { get; set; }
+        private Dictionary<string, int> _scores;
+
+        public GameContext()
+        {
+            _state = new RollingDiceState();
+            Player = new SimulatedPlayer();
+            _scores = new Dictionary<string, int>
         {
             { "Ones", 0 },
             { "Twos", 0 },
@@ -17,58 +23,59 @@ public class GameContext
             { "Fives", 0 },
             { "Sixes", 0 }
         };
-    }
+        }
 
-    public IGameState CurrentState => _state;
+        public IGameState CurrentState => _state;
 
-    public int[] DiceValues => Player.Dice;
+        public int[] DiceValues => Player.Dice;
 
-    public Dictionary<string, int> Scores => GetScores();
+        public Dictionary<string, int> Scores => GetScores();
 
-    public int TotalScore => CalculateTotalScore();
+        public int TotalScore => CalculateTotalScore();
 
-    public void SetState(IGameState state)
-    {
-        _state = state;
-    }
-
-    public void PlayNextTurn()
-    {
-        _state.NextTurn(this);
-    }
-
-    public bool AllCategoriesScored()
-    {
-        foreach (var score in _scores.Values)
+        public void SetState(IGameState state)
         {
-            if (score == 0)
+            _state = state;
+        }
+
+        public void PlayNextTurn()
+        {
+            _state.NextTurn(this);
+        }
+
+        public bool AllCategoriesScored()
+        {
+            foreach (var score in _scores.Values)
             {
-                return false;
+                if (score == 0)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public void UpdateScore(string category, int score)
+        {
+            if (!string.IsNullOrEmpty(category))
+            {
+                _scores[category] = score;
             }
         }
-        return true;
-    }
 
-    public void UpdateScore(string category, int score)
-    {
-        if (!string.IsNullOrEmpty(category))
+        public Dictionary<string, int> GetScores()
         {
-            _scores[category] = score;
+            return _scores;
         }
-    }
 
-    public Dictionary<string, int> GetScores()
-    {
-        return _scores;
-    }
-
-    public int CalculateTotalScore()
-    {
-        int totalScore = 0;
-        foreach (var score in _scores.Values)
+        public int CalculateTotalScore()
         {
-            totalScore += score;
+            int totalScore = 0;
+            foreach (var score in _scores.Values)
+            {
+                totalScore += score;
+            }
+            return totalScore;
         }
-        return totalScore;
     }
 }

@@ -1,6 +1,11 @@
-public interface IPlayer
+using YatzySimple.Core;
+
+namespace YatzySimple.Interfaces
 {
-    int[] Dice { get; }
-    void RollDice();
-    void ScoreDice(GameContext context);
+    public interface IPlayer
+    {
+        int[] Dice { get; }
+        void RollDice();
+        void ScoreDice(GameContext context);
+    }
 }

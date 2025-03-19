@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using Xunit;
 using Moq;
+using YatzySimple.Core;
+using YatzySimple.States;
+using YatzySimple.Interfaces;
 
 namespace YatzyTests
 {

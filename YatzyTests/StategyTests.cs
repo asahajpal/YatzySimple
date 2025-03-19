@@ -5,6 +5,7 @@ using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using YatzySimple.Core;
 //using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace YatzyTests
