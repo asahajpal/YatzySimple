@@ -33,7 +33,7 @@ namespace YatzyTests
             var result = strategy.ChooseCategory(scores, dice);
 
             // Assert
-            Assert.Equal(@"None", result);
+            Assert.Equal(string.Empty, result);
         }
     }
 }

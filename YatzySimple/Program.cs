@@ -72,50 +72,20 @@ public class GameContext
 
     public IGameState CurrentState => _state;
 
+    public int[] DiceValues => Player.Dice;
+
+    public Dictionary<string, int> Scores => GetScores();
+
+    public int TotalScore => CalculateTotalScore();
+
     public void SetState(IGameState state)
     {
         _state = state;
     }
 
-    public void PlayNextTurn(out string message)
+    public void PlayNextTurn()
     {
-        IGameState currentState = _state;
-        var sb = new System.Text.StringBuilder();
-
-        if (currentState is RollingDiceState)
-        {
-            sb.AppendLine("Rolling dice...");
-        }
-        else if (currentState is ScoringState)
-        {
-            sb.AppendLine("Scoring...");
-        }
-
         _state.NextTurn(this);
-
-        if (currentState is RollingDiceState)
-        {
-            int[] diceValues = Player.Dice;
-            sb.AppendLine("Dice values: " + string.Join(", ", diceValues));
-        }
-        else if (currentState is ScoringState)
-        {
-            Dictionary<string, int> scores = GetScores();
-            sb.AppendLine("Current Scores:");
-            foreach (var score in scores)
-            {
-                sb.AppendLine($"{score.Key}: {score.Value}");
-            }
-            int totalScore = CalculateTotalScore();
-            sb.AppendLine($"Total Score: {totalScore}");
-        }
-
-        if (currentState is GameOverState)
-        {
-            sb.AppendLine("Game over");
-        }
-
-        message = sb.ToString();
     }
 
     public bool AllCategoriesScored()
@@ -277,8 +247,23 @@ public class Program
                 break;
             }
 
-            game.PlayNextTurn(out string message);
-            Console.WriteLine(message);
+            game.PlayNextTurn();
+
+            if (game.CurrentState is RollingDiceState)
+            {
+                Console.WriteLine("Rolling dice...");
+                Console.WriteLine("Dice values: " + string.Join(", ", game.DiceValues));
+            }
+            else if (game.CurrentState is ScoringState)
+            {
+                Console.WriteLine("Scoring...");
+                Console.WriteLine("Current Scores:");
+                foreach (var score in game.Scores)
+                {
+                    Console.WriteLine($"{score.Key}: {score.Value}");
+                }
+                Console.WriteLine($"Total Score: {game.TotalScore}");
+            }
 
             if (!game.CurrentState.IsGameOn)
             {
