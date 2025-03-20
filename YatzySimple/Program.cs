@@ -10,6 +10,7 @@ public class Program
         while (game.CurrentState.IsGameOn)
         {
             Console.WriteLine("Press any key to play the next turn, or type 's' to stop the game.");
+            //var input = Console.ReadKey(intercept: true).KeyChar;
             var input = Console.Read();
             if (input == 's')
             {
