@@ -14,7 +14,8 @@ namespace YatzySimple.States
             context.Player.ScoreDice(context);
             if (context.AllCategoriesScored())
             {
-                IsGameOn = false;
+                context.TransitionToGameOverState();
+                //IsGameOn = false;
             }
             else
             {

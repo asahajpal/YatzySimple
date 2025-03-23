@@ -13,6 +13,6 @@ namespace YatzySimple.States
             // Transition to the next state if needed
             context.TransitionToScoringState();
         }
-        public bool IsGameOn => false;
+        public bool IsGameOn => true;
     }
 }

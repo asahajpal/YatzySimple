@@ -17,8 +17,18 @@ public class Program
         while (game.CurrentState.IsGameOn)
         {
             Console.WriteLine("Press any key to play the next turn, or type 's' to stop the game.");
-            //var input = Console.ReadKey(intercept: true).KeyChar;
-            var input = Console.Read();
+
+               if (game.CurrentState is RollingDiceState)
+            {
+                Console.WriteLine("Rolling dice...");
+                //Console.WriteLine("Dice values: " + string.Join(", ", game.DiceValues));
+            }
+            else if (game.CurrentState is ScoringState)
+            {
+                Console.WriteLine("Scoring...");
+            }
+            var input = Console.ReadKey(intercept: true).KeyChar;
+            //var input = Console.Read();
             if (input == 's')
             {
                 Console.WriteLine("Game stopped by user.");
@@ -26,25 +36,17 @@ public class Program
             }
 
             game.PlayNextTurn();
-
-            if (game.CurrentState is RollingDiceState)
-            {
-                Console.WriteLine("Rolling dice...");
-                Console.WriteLine("Dice values: " + string.Join(", ", game.DiceValues));
-            }
-            else if (game.CurrentState is ScoringState)
-            {
-                Console.WriteLine("Scoring...");
-                Console.WriteLine("Current Scores:");
+            Console.WriteLine("Dice values: " + string.Join(", ", game.DiceValues));
+             Console.WriteLine("Current Scores:");
                 foreach (var score in game.Scores)
                 {
                     Console.WriteLine($"{score.Key}: {score.Value}");
                 }
                 Console.WriteLine($"Total Score: {game.TotalScore}");
-            }
 
             if (!game.CurrentState.IsGameOn)
             {
+                Console.WriteLine("All Categories scored...");
                 Console.WriteLine("Game over");
                 break;
             }

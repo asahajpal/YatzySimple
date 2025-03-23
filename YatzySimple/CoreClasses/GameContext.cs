@@ -28,7 +28,7 @@ namespace YatzySimple.Core
                 { "Fives", 0 },
                 { "Sixes", 0 }
             };
-            _dice = new int[5];
+            _dice = new int[6];
         }
 
         public IGameState CurrentState => _state;
@@ -104,6 +104,11 @@ namespace YatzySimple.Core
         public void TransitionToRollingDiceState()
         {
             SetState(new RollingDiceState());
+        }
+
+        internal void TransitionToGameOverState()
+        {
+           SetState(new GameOverState());
         }
 
         // Add other state transition methods as needed
