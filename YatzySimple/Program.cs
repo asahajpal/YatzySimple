@@ -33,6 +33,7 @@ public class Program
             else if (game.CurrentState is ScoringState)
             {
                 Console.WriteLine("Scoring...");
+                Console.WriteLine("Dice values: " + string.Join(", ", game.DiceValues));
             }
             var input = Console.ReadKey(intercept: true).KeyChar;
             //var input = Console.Read();
@@ -43,7 +44,7 @@ public class Program
             }
 
             game.PlayNextTurn();
-            Console.WriteLine("Dice values: " + string.Join(", ", game.DiceValues));
+    
 
             if (game.CurrentState is GameOverState)
             {
