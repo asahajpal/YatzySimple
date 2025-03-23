@@ -1,16 +1,18 @@
 using System;
+using YatzySimple.Core;
 using YatzySimple.Interfaces;
 
 namespace YatzySimple.States
 {
     public class RollingDiceState : IGameState
     {
-        public NextTurnDelegate NextTurn => (context) =>
+        public void NextTurn(GameContext context)
         {
+            // Implement the logic for the next turn in the rolling dice state
             context.RollDice();
-            context.SetState(new ScoringState());
-        };
-
-        public bool IsGameOn => true;
+            // Transition to the next state if needed
+            context.TransitionToScoringState();
+        }
+        public bool IsGameOn => false;
     }
 }

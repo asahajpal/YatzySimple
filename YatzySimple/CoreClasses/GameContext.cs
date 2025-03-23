@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using YatzySimple.Interfaces;
 using YatzySimple.Players;
 using YatzySimple.States;
@@ -7,14 +9,16 @@ namespace YatzySimple.Core
     public class GameContext
     {
         private IGameState _state;
+        private readonly Random _random;
         public IPlayer Player { get; set; }
         private Dictionary<string, int> _scores;
         private int[] _dice;
 
-        public GameContext()
+        public GameContext(IGameState initialState, IPlayer player)
         {
-            _state = new RollingDiceState();
-            Player = new SimulatedPlayer();
+            _state = initialState;
+            Player = player;
+            _random = new Random();
             _scores = new Dictionary<string, int>
             {
                 { "Ones", 0 },
@@ -35,7 +39,7 @@ namespace YatzySimple.Core
 
         public int TotalScore => CalculateTotalScore();
 
-        public void SetState(IGameState state)
+        private void SetState(IGameState state)
         {
             _state = state;
         }
@@ -86,9 +90,22 @@ namespace YatzySimple.Core
             {
                 for (int j = 0; j < _dice.Length; j++)
                 {
-                    _dice[j] = new Random().Next(1, 7);
+                    _dice[j] = _random.Next(1, 7);
                 }
             }
         }
+
+        // Example of a method to transition to a new state
+        public void TransitionToScoringState()
+        {
+            SetState(new ScoringState());
+        }
+
+        public void TransitionToRollingDiceState()
+        {
+            SetState(new RollingDiceState());
+        }
+
+        // Add other state transition methods as needed
     }
 }

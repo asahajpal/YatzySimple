@@ -1,4 +1,5 @@
 using System;
+using YatzySimple.Core;
 using YatzySimple.Interfaces;
 
 namespace YatzySimple.States
@@ -6,19 +7,19 @@ namespace YatzySimple.States
 
     public class ScoringState : IGameState
     {
-        public NextTurnDelegate NextTurn => (context) =>
+        public bool IsGameOn { get; private set; } = true;
+
+        public void NextTurn(GameContext context)
         {
             context.Player.ScoreDice(context);
             if (context.AllCategoriesScored())
             {
-                context.SetState(new GameOverState());
+                IsGameOn = false;
             }
             else
             {
-                context.SetState(new RollingDiceState());
+                context.TransitionToRollingDiceState();
             }
-        };
-
-        public bool IsGameOn => true;
+        }
     }
 }

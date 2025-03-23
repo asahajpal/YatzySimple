@@ -1,11 +1,18 @@
 ﻿using YatzySimple.Core;
+using YatzySimple.Interfaces;
+using YatzySimple.Players;
 using YatzySimple.States;
 
-public class Program
+public class Program 
 {
     public static void Main(string[] args)
     {
-        GameContext game = new GameContext();
+        // Initialize the initial state and player
+        IGameState initialState = new RollingDiceState();
+        IPlayer player = new SimulatedPlayer();
+
+        // Create the GameContext with the initial state and player
+        GameContext game = new GameContext(initialState, player);
 
         while (game.CurrentState.IsGameOn)
         {

@@ -1,4 +1,6 @@
+using Xunit;
 using YatzySimple.Core;
+using YatzySimple.Players;
 using YatzySimple.States;
 using YatzySimple.Interfaces;
 using Moq;
@@ -8,10 +10,80 @@ namespace YatzyTests
     public class GameContextTests
     {
         [Fact]
+        public void GameContext_ShouldInitializeCorrectly()
+        {
+            // Arrange
+            var initialState = new RollingDiceState();
+            var player = new SimulatedPlayer();
+
+            // Act
+            var gameContext = new GameContext(initialState, player);
+
+            // Assert
+            Assert.NotNull(gameContext.CurrentState);
+            Assert.NotNull(gameContext.Player);
+            Assert.Equal(initialState, gameContext.CurrentState);
+            Assert.Equal(player, gameContext.Player);
+        }
+
+        [Fact]
+        public void PlayNextTurn_ShouldTransitionToScoringState()
+        {
+            // Arrange
+            var initialState = new RollingDiceState();
+            var player = new SimulatedPlayer();
+            var gameContext = new GameContext(initialState, player);
+
+            // Act
+            gameContext.PlayNextTurn();
+
+            // Assert
+            Assert.IsType<ScoringState>(gameContext.CurrentState);
+        }
+
+        [Fact]
+        public void AllCategoriesScored_ShouldReturnFalse_WhenNotAllScored()
+        {
+            // Arrange
+            var initialState = new RollingDiceState();
+            var player = new SimulatedPlayer();
+            var gameContext = new GameContext(initialState, player);
+
+            // Act
+            var result = gameContext.AllCategoriesScored();
+
+            // Assert
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void AllCategoriesScored_ShouldReturnTrue_WhenAllScored()
+        {
+            // Arrange
+            var initialState = new RollingDiceState();
+            var player = new SimulatedPlayer();
+            var gameContext = new GameContext(initialState, player);
+            gameContext.UpdateScore("Ones", 1);
+            gameContext.UpdateScore("Twos", 2);
+            gameContext.UpdateScore("Threes", 3);
+            gameContext.UpdateScore("Fours", 4);
+            gameContext.UpdateScore("Fives", 5);
+            gameContext.UpdateScore("Sixes", 6);
+
+            // Act
+            var result = gameContext.AllCategoriesScored();
+
+            // Assert
+            Assert.True(result);
+        }
+
+        [Fact]
         public void PlayNextTurn_ShouldReachGameOverState_WhenAllCategoriesAreScored()
         {
             // Arrange
-            var gameContext = new GameContext();
+            var initialState = new RollingDiceState();
+            var player = new SimulatedPlayer();
+            var gameContext = new GameContext(initialState, player);
             
             // Set all categories to non-zero scores
             gameContext.UpdateScore("Ones", 1);
@@ -20,7 +92,7 @@ namespace YatzyTests
             gameContext.UpdateScore("Fours", 4);
             gameContext.UpdateScore("Fives", 5);
             gameContext.UpdateScore("Sixes", 6);
-            gameContext.SetState(new ScoringState());
+            gameContext.TransitionToScoringState();
 
             // Act
             gameContext.PlayNextTurn();
@@ -33,7 +105,9 @@ namespace YatzyTests
         public void PlayNextTurn_ShouldTransitionToScoringState_AfterRollingDice()
         {
             // Arrange
-            var gameContext = new GameContext();
+            var initialState = new RollingDiceState();
+            var player = new SimulatedPlayer();
+            var gameContext = new GameContext(initialState, player);
 
             // Act
             gameContext.PlayNextTurn();
@@ -53,11 +127,9 @@ namespace YatzyTests
             {
                 context.UpdateScore("Ones", 5);
             });
-
-            var gameContext = new GameContext
-            {
-                Player = mockPlayer.Object
-            };
+            var initialState = new RollingDiceState();
+            var player = new SimulatedPlayer();
+            var gameContext = new GameContext(initialState, mockPlayer.Object);
 
             // Act
             gameContext.PlayNextTurn(); // RollingDiceState to ScoringState
@@ -71,7 +143,9 @@ namespace YatzyTests
         public void TotalScore_ShouldBeSumOfIndividualCategoryScores()
         {
             // Arrange
-            var gameContext = new GameContext();
+            var initialState = new RollingDiceState();
+            var player = new SimulatedPlayer();
+            var gameContext = new GameContext(initialState, player);
 
             // Update scores for different categories
             gameContext.UpdateScore("Ones", 1);
