@@ -18,8 +18,15 @@ public class Program
         {
             Console.WriteLine("Press any key to play the next turn, or type 's' to stop the game.");
 
-               if (game.CurrentState is RollingDiceState)
-            {
+            if(game.CurrentState is RollingDiceState)
+            {           
+                Console.WriteLine("Current Scores:");
+                foreach (var score in game.Scores)
+                {
+                    Console.WriteLine($"{score.Key}: {score.Value}");
+                }
+                Console.WriteLine($"Total Score: {game.TotalScore}");
+
                 Console.WriteLine("Rolling dice...");
                 //Console.WriteLine("Dice values: " + string.Join(", ", game.DiceValues));
             }
@@ -37,15 +44,16 @@ public class Program
 
             game.PlayNextTurn();
             Console.WriteLine("Dice values: " + string.Join(", ", game.DiceValues));
-             Console.WriteLine("Current Scores:");
+
+            if (game.CurrentState is GameOverState)
+            {
+                Console.WriteLine("Current Scores:");
                 foreach (var score in game.Scores)
                 {
                     Console.WriteLine($"{score.Key}: {score.Value}");
                 }
                 Console.WriteLine($"Total Score: {game.TotalScore}");
-
-            if (!game.CurrentState.IsGameOn)
-            {
+                
                 Console.WriteLine("All Categories scored...");
                 Console.WriteLine("Game over");
                 break;
